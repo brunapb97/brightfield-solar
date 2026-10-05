@@ -55,8 +55,22 @@ Um slug que não tem arquivo retorna 404.
 - **Tailwind 4 com tokens.** Cores, tamanhos de texto e fontes ficam em `globals.css`.
 - **Cálculo isolado e testado.** `lib/calculate.ts` é uma função pura, coberta por testes em `lib/calculate.test.ts`.
 - **Acessibilidade.** HTML semântico (`section`, hierarquia de títulos, `nav`, `footer`), `alt` nas imagens, foco visível, FAQ como acordeão com `aria-expanded` e menu mobile com `aria-expanded` e fechamento por Esc.
-- **Testes além dos do agente:** os 4 testes gerados pelo agente passaram, mas percebi que eles não provavam os números do briefing. Adicionei os 6 cenários da tabela do briefing.
-- **Teste da cidade de Austin:** troquei só o arquivo de dados e a página inteira mudou, o que prova que não há texto fixo de cidade no código.
+
+## Duas decisões que tomei
+
+### 1. Não confiar só nos testes gerados pela IA
+Pedi ao agente a função de cálculo e os testes. Os 4 testes que ele escreveu passaram,
+mas verificavam comportamentos (mínimo, teto, arredondamento, entradas inválidas) e não
+os números do briefing. Como código e testes saíram da mesma fonte, eu queria uma
+verificação independente. Adicionei os 6 cenários da tabela de exemplo, com painéis,
+investimento, economia e retorno esperados. Todos os cenários passaram, o que confirma de forma independente que a função segue as regras do briefing, incluindo o mínimo de painéis e o teto da economia. Também percebi que testes escritos pela mesma fonte do código tendem a validar a própria lógica, e por isso usei valores externos.
+
+### 2. Testar o requisito "trocar o arquivo, trocar a cidade"
+Queria confirmar que uma cidade nova é só um arquivo novo. Copiei `phoenix-az.json`
+para `austin-tx.json`, mudei cidade, tarifa, horas de sol, mínimo de painéis, telefone e
+nome das equipes, e abri `/austin-tx`. Também busquei "Phoenix" nos componentes. A página
+mudou por inteiro e a busca só encontrou o arquivo de dados, então concluí que o
+requisito está cumprido. Mantive como cidade fictícia de teste.
 
 ## Suposições
 
@@ -66,13 +80,11 @@ Um slug que não tem arquivo retorna 404.
 - A chamada para ação aponta para `#`.
 
 ## Uso de IA
-
-- O agente gerou o código a partir do Figma e os primeiros testes. Eu conferi o resultado contra a tabela do briefing e no navegador.
+Usei Copilot / Claude Code no VS Code com o servidor MCP do Figma, passando um frame por seção (desktop e mobile). A IA gerou os componentes, a função de cálculo e os primeiros testes. Aproveitei todo o design feito por mim no Figma. Mudei algumas inconsistências visuais (como o espaçamento do simulador no mobile, e adaptação dos ícones de + e - para facilitar a usabilidade no celular. Também ajustei o hover e as rotas dos botões, tanto em desktop quanto em mobile). Conferi o resultado com os 6 cenários do briefing, comparando cada seção com o Figma no desktop e no modo celular, e com a cidade de teste.
 
 ## Pendências
-
-- FAQ com números escritos à mão.
-- Sem analytics.
+- FAQ com números e textos de Phoenix escritos a mão: para outra cidade ficariam errados e deveriam ser gerados pela função de cálculo.
+- Sem analytics (não captura UTMs nem registra simulações).
 - Sem compartilhamento do resultado por link.
 
 ## Links
