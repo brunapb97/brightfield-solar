@@ -1,12 +1,14 @@
-# Caso 09 — Página de cidade, Brightfield Solar
+Leia em português: [README.pt-BR.md](README.pt-BR.md)
 
-**Tempo dedicado:** aproximadamente 5 horas
+# Case 09 — City Page, Brightfield Solar
 
-Landing page de energia solar que muda de conteúdo conforme a cidade da URL (`/phoenix-az`, `/austin-tx`). Cada seção foi implementada a partir dos frames do Figma (mobile e desktop) como um único componente responsivo, e todo texto e número que varia por cidade vem de um arquivo JSON.
+**Time spent:** approximately 5 hours
 
-## Como instalar e rodar
+A solar energy landing page whose content changes based on the city in the URL (`/phoenix-az`, `/austin-tx`). I implemented each section from the Figma frames (mobile and desktop) as a single responsive component, and all text and numbers that vary by city come from a JSON file.
 
-Requisitos: Node.js 20 ou superior e npm.
+## How to install and run
+
+Requirements: Node.js 20 or later and npm.
 
 ```bash
 npm install      # instala as dependências
@@ -14,16 +16,16 @@ npm run dev      # servidor de desenvolvimento em http://localhost:3000
 npm test         # roda os testes (Vitest)
 ```
 
-Outros comandos úteis:
+Other useful commands:
 
 ```bash
 npm run build    # build de produção (gera uma página estática por cidade)
 npm run lint     # ESLint
 ```
 
-A raiz `/` redireciona para `/phoenix-az`.
+The root `/` redirects to `/phoenix-az`.
 
-## Estrutura do projeto
+## Project structure
 
 ```
 data/cities/          um arquivo JSON por cidade (phoenix-az.json, austin-tx.json)
@@ -40,55 +42,55 @@ src/
 public/images/        imagens e ícones de cada seção
 ```
 
-### Como adicionar uma cidade nova
+### How to add a new city
 
-1. Crie `data/cities/<slug>.json`, por exemplo `data/cities/denver-co.json`, com o mesmo formato dos arquivos existentes (veja o tipo `City` em `lib/types.ts`). O campo `slug` deve ser igual ao nome do arquivo.
-2. Pronto: `getAllCitySlugs()` lê a pasta, então a rota `/denver-co` passa a existir no próximo `npm run dev` ou `npm run build`, com título e descrição próprios. Nenhum código precisa mudar.
+1. Create `data/cities/<slug>.json`, for example `data/cities/denver-co.json`, using the same format as the existing files (see the `City` type in `lib/types.ts`). The `slug` field must match the file name.
+2. That's it: `getAllCitySlugs()` reads the folder, so the `/denver-co` route will be available on the next `npm run dev` or `npm run build`, with its own title and description. No code changes are needed.
 
-Um slug que não tem arquivo retorna 404.
+A slug without a file returns 404.
 
-## Decisões técnicas
+## Technical decisions
 
-- **Next.js (App Router) com páginas estáticas.** `generateStaticParams` gera uma página por arquivo em `data/cities`. Os dados são lidos no servidor, então nada de cidade vai para o bundle do cliente.
-- **Dados fora do código.** Os componentes recebem `city: City` por props tipadas e não têm texto fixo de cidade. Os números do simulador (tarifa, horas de sol, custo por watt, mínimo de painéis, crédito federal) vêm do JSON.
-- **Mobile first.** O estilo base segue o frame mobile e o prefixo `lg:` aplica o desktop, sem duplicar conteúdo em versões escondidas. Como o Figma só tem dois frames, usei `lg:` (1024 px) em vez de `md:`, porque as grades de três colunas ficam apertadas em 768 px.
-- **Tailwind 4 com tokens.** Cores, tamanhos de texto e fontes ficam em `globals.css`.
-- **Cálculo isolado e testado.** `lib/calculate.ts` é uma função pura, coberta por testes em `lib/calculate.test.ts`.
-- **Acessibilidade.** HTML semântico (`section`, hierarquia de títulos, `nav`, `footer`), `alt` nas imagens, foco visível, FAQ como acordeão com `aria-expanded` e menu mobile com `aria-expanded` e fechamento por Esc.
+- **Next.js (App Router) with static pages.** `generateStaticParams` generates one page per file in `data/cities`. The data is read on the server, so no city-specific data goes into the client bundle.
+- **Data kept outside the code.** Components receive `city: City` through typed props and contain no hardcoded city-specific text. The simulator numbers (rate, sunshine hours, cost per watt, panel minimum, federal credit) come from the JSON.
+- **Mobile first.** The base style follows the mobile frame, and the `lg:` prefix applies desktop styles without duplicating content in hidden versions. Since Figma has only two frames, I used `lg:` (1024 px) instead of `md:`, because three-column grids feel cramped at 768 px.
+- **Tailwind 4 with tokens.** Colors, text sizes, and fonts are defined in `globals.css`.
+- **Calculation isolated and tested.** `lib/calculate.ts` is a pure function, covered by tests in `lib/calculate.test.ts`.
+- **Accessibility.** Semantic HTML (`section`, heading hierarchy, `nav`, `footer`), `alt` text for images, visible focus, FAQ as an accordion with `aria-expanded`, and a mobile menu with `aria-expanded` that closes with Esc.
 
-## Duas decisões que tomei
+## Two decisions I made
 
-### 1. Não confiar só nos testes gerados pela IA
-Pedi ao agente a função de cálculo e os testes. Os 4 testes que ele escreveu passaram,
-mas verificavam comportamentos (mínimo, teto, arredondamento, entradas inválidas) e não
-os números do briefing. Como código e testes saíram da mesma fonte, eu queria uma
-verificação independente. Adicionei os 6 cenários da tabela de exemplo, com painéis,
-investimento, economia e retorno esperados. Todos os cenários passaram, o que confirma de forma independente que a função segue as regras do briefing, incluindo o mínimo de painéis e o teto da economia. Também percebi que testes escritos pela mesma fonte do código tendem a validar a própria lógica, e por isso usei valores externos.
+### 1. Not relying only on AI-generated tests
+I asked the agent for the calculation function and tests. The 4 tests it wrote passed,
+but they checked behaviors (minimum, cap, rounding, invalid inputs) rather than
+the numbers in the brief. Since the code and tests came from the same source, I wanted an
+independent check. I added the 6 scenarios from the example table, with expected panels,
+investment, savings, and payback. All scenarios passed, independently confirming that the function follows the rules in the brief, including the panel minimum and the savings cap. I also realized that tests written by the same source as the code tend to validate the logic itself, so I used external values.
 
-### 2. Testar o requisito "trocar o arquivo, trocar a cidade"
-Queria confirmar que uma cidade nova é só um arquivo novo. Copiei `phoenix-az.json`
-para `austin-tx.json`, mudei cidade, tarifa, horas de sol, mínimo de painéis, telefone e
-nome das equipes, e abri `/austin-tx`. Também busquei "Phoenix" nos componentes. A página
-mudou por inteiro e a busca só encontrou o arquivo de dados, então concluí que o
-requisito está cumprido. Mantive como cidade fictícia de teste.
+### 2. Testing the requirement "change the file, change the city"
+I wanted to confirm that adding a new city only requires a new file. I copied `phoenix-az.json`
+to `austin-tx.json`, changed the city, rate, sunshine hours, panel minimum, phone number, and
+team names, and opened `/austin-tx`. I also searched for "Phoenix" in the components. The page
+changed completely, and the search found only the data file, so I concluded that the
+requirement is met. I kept it as a fictional test city.
 
-## Suposições
+## Assumptions
 
-- Estado inicial do simulador: conta de US$ 220 e 80% de cobertura (sugestão do briefing).
-- Os perfis só preenchem a conta.
-- O quociente é arredondado a 6 casas antes do `ceil`, para evitar erro de ponto flutuante.
-- A chamada para ação aponta para `#`.
+- Initial simulator state: a US$ 220 bill and 80% coverage (suggested in the brief).
+- The profiles only fill in the bill amount.
+- The quotient is rounded to 6 decimal places before `ceil` to avoid floating-point errors.
+- The call to action points to `#`.
 
-## Uso de IA
-Usei Copilot / Claude Code no VS Code com o servidor MCP do Figma, passando um frame por seção (desktop e mobile). A IA gerou os componentes, a função de cálculo e os primeiros testes. Aproveitei todo o design feito por mim no Figma. Mudei algumas inconsistências visuais (como o espaçamento do simulador no mobile, e adaptação dos ícones de + e - para facilitar a usabilidade no celular. Também ajustei o hover e as rotas dos botões, tanto em desktop quanto em mobile). Conferi o resultado com os 6 cenários do briefing, comparando cada seção com o Figma no desktop e no modo celular, e com a cidade de teste.
+## AI use
+I used Copilot / Claude Code in VS Code with the Figma MCP server, providing one frame per section (desktop and mobile). The AI generated the components, calculation function, and initial tests. I used all the design work I had created in Figma. I fixed some visual inconsistencies (such as the simulator spacing on mobile and adapting the + and - icons to make them easier to use on a phone). I also adjusted the hover state and button routes on both desktop and mobile. I checked the result against the 6 scenarios in the brief, comparing each section with Figma on desktop and mobile, and with the test city.
 
-## Pendências
-- FAQ com números e textos de Phoenix escritos a mão: para outra cidade ficariam errados e deveriam ser gerados pela função de cálculo.
-- Sem analytics (não captura UTMs nem registra simulações).
-- Sem compartilhamento do resultado por link.
+## Outstanding items
+- FAQ with Phoenix-specific numbers and text written by hand: these would be incorrect for another city and should be generated by the calculation function.
+- No analytics (UTMs are not captured and simulations are not recorded).
+- No way to share the result via a link.
 
 ## Links
 
-- Página publicada: https://brightfield-solar-beta.vercel.app/
+- Published page: https://brightfield-solar-beta.vercel.app/
 - Figma: https://www.figma.com/design/TJhyewgzthGsgYvxvVqqrD/Brightfield-Solar?node-id=0-1&t=TY1rCwztReFJfJJb-1
-- Vídeo: https://drive.google.com/file/d/1GwNhurA9_SiZTE7Zqa0Iydloajx-ScF5/view?usp=sharing
+- Video: https://drive.google.com/file/d/1GwNhurA9_SiZTE7Zqa0Iydloajx-ScF5/view?usp=sharing
