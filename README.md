@@ -89,6 +89,6 @@ Usei Copilot / Claude Code no VS Code com o servidor MCP do Figma, passando um f
 
 ## Links
 
-- Página publicada: _[adicionar link]_
-- Figma: https://www.figma.com/design/TJhyewgzthGsgYvxvVqqrD/Untitled
-- Vídeo: _[adicionar link]_
+- Página publicada: https://brightfield-solar-beta.vercel.app/
+- Figma: https://www.figma.com/design/TJhyewgzthGsgYvxvVqqrD/Brightfield-Solar?node-id=0-1&t=TY1rCwztReFJfJJb-1
+- Vídeo: https://drive.google.com/file/d/1GwNhurA9_SiZTE7Zqa0Iydloajx-ScF5/view?usp=sharing
